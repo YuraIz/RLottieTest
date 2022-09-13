@@ -1,8 +1,7 @@
+use glib::clone;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gdk, gio, glib, CompositeTemplate};
-
-use rlottie::{Animation, Surface};
 
 use super::lottie_animation::LottieAnimation;
 
@@ -16,10 +15,6 @@ mod imp {
         // Template widgets
         #[template_child]
         pub header_bar: TemplateChild<gtk::HeaderBar>,
-        #[template_child]
-        pub label: TemplateChild<gtk::Label>,
-        #[template_child]
-        pub gtk_box: TemplateChild<gtk::Box>,
         #[template_child]
         pub picture: TemplateChild<gtk::Picture>,
     }
@@ -43,7 +38,30 @@ mod imp {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
 
-            let lottie_animation = LottieAnimation::new();
+            let lottie_animation =
+                LottieAnimation::from_filename("./data/animations/AuthorizationStateWaitCode.tgs");
+
+            let target = gtk::DropTarget::new(gdk::FileList::static_type(), gdk::DragAction::COPY);
+
+            target.connect_drop(clone!(@weak obj => @default-return false, move
+                | _, value, _, _ | {
+                    if let Ok(file_list) = value.get::<gdk::FileList>() {
+                        let file = file_list.files()[0].to_owned();
+
+                        let lottie_animation = LottieAnimation::from_file(file);
+
+                        lottie_animation.play();
+
+                        obj.imp().picture.set_paintable(Some(&lottie_animation));
+
+                        true
+                    } else {
+                        false
+                    }
+                }
+            ));
+
+            obj.add_controller(&target);
 
             lottie_animation.play();
 
