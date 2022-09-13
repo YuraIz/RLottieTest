@@ -17,3 +17,5 @@ lottie_animation.play();
 
 obj.imp().picture.set_paintable(Some(&lottie_animation));
 ```
+
+you can drag'n drop animations from [data/animations](https://github.com/YuraIz/RLottieTest/tree/main/data/animations) folder
