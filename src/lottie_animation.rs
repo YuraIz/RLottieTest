@@ -16,11 +16,12 @@ mod imp {
     #[derive(Default)]
     pub struct LottieAnimation {
         pub frame_num: Cell<usize>,
-        pub playing: Cell<bool>,
+        pub totalframe: Cell<usize>,
         pub animation: RefCell<Option<rlottie::Animation>>,
         pub surface: RefCell<Option<rlottie::Surface>>,
         pub intrinsic: Cell<(i32, i32, f64)>,
         pub texture: RefCell<Option<gdk::MemoryTexture>>,
+        pub cache: RefCell<Vec<gdk::MemoryTexture>>,
 
         pub player_source_id: Cell<Option<glib::SourceId>>,
     }
@@ -64,18 +65,30 @@ mod imp {
                     _ => panic!("unsupporded file type"),
                 };
 
+                let was_playing = media_file.is_playing();
+                media_file.pause();
+
+                self.cache.borrow_mut().clear();
+                self.frame_num.set(0);
+
                 let size = animation.size();
                 let framerate = animation.framerate();
+                let totalframe = animation.totalframe();
                 _ = self.animation.replace(Some(animation));
 
                 let (width, height) = (size.width as i32, size.height as i32);
                 let aspect_ratio = width as f64 / height as f64;
 
                 self.intrinsic.set((width, height, aspect_ratio));
+                self.totalframe.set(totalframe);
 
                 let surface = rlottie::Surface::new(size);
 
                 self.surface.replace(Some(surface));
+
+                if was_playing {
+                    media_file.play();
+                }
             }
         }
     }
@@ -124,7 +137,12 @@ mod imp {
         }
 
         fn snapshot(&self, _: &Self::Type, snapshot: &gdk::Snapshot, width: f64, height: f64) {
-            if let Some(texture) = &*self.texture.borrow() {
+            let total_frame = self.totalframe.get();
+            let frame_num = (self.frame_num.get() + total_frame - 1) % total_frame;
+
+            let mut cache = self.cache.borrow_mut();
+
+            if let Some(texture) = &cache.get(frame_num) {
                 texture.snapshot(snapshot, width, height);
             }
         }
@@ -153,27 +171,31 @@ mod imp {
         }
 
         fn setup_next_frame(&self) {
-            if let Some(ref mut animation) = *self.animation.borrow_mut() {
-                if let Some(ref mut surface) = *self.surface.borrow_mut() {
-                    let frame_num = self.frame_num.get();
+            let mut cache = self.cache.borrow_mut();
+            let frame_num = self.frame_num.get();
 
-                    animation.render(frame_num, surface);
+            if cache.len() != self.totalframe.get() {
+                if let Some(ref mut animation) = *self.animation.borrow_mut() {
+                    if let Some(ref mut surface) = *self.surface.borrow_mut() {
+                        animation.render(frame_num, surface);
 
-                    self.frame_num.set((frame_num + 1) % animation.totalframe());
+                        let (width, height, _) = self.intrinsic.get();
 
-                    let (width, height, _) = self.intrinsic.get();
+                        let data = surface.data();
 
-                    let data = surface.data();
+                        let mut data = unsafe {
+                            std::slice::from_raw_parts_mut(data.as_ptr() as *mut u8, data.len() * 4)
+                        };
 
-                    let mut data = unsafe {
-                        std::slice::from_raw_parts_mut(data.as_ptr() as *mut u8, data.len() * 4)
-                    };
+                        let texture = Self::texture_from_bytes(&data, width, height);
 
-                    let texture = Self::texture_from_bytes(&data, width, height);
-
-                    self.texture.replace(texture);
+                        if let Some(texture) = texture {
+                            cache.push(texture);
+                        }
+                    }
                 }
             }
+            self.frame_num.set((frame_num + 1) % self.totalframe.get());
         }
     }
 }
@@ -190,7 +212,7 @@ impl LottieAnimation {
     }
 
     pub fn from_filename(path: &str) -> Self {
-        let file = gio::File::for_path("./data/animations/AuthorizationStateWaitCode.tgs");
+        let file = gio::File::for_path(path);
         Self::from_file(file)
     }
 }
