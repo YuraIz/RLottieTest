@@ -99,7 +99,7 @@ mod imp {
                 self.player_source_id.set(id);
                 false
             } else {
-                let id = glib::timeout_add_local(
+                let id = glib::timeout_add(
                     std::time::Duration::from_secs_f64(1.0 / 60.0),
                     clone!(@weak obj => @default-return glib::Continue(false), move || {
                         obj.imp().setup_next_frame();
@@ -150,14 +150,7 @@ mod imp {
 
     impl LottieAnimation {
         fn texture_from_bytes(data: &[u8], width: i32, height: i32) -> Option<gdk::MemoryTexture> {
-            let data = unsafe {
-                glib::translate::from_glib_full(glib::ffi::g_bytes_new_with_free_func(
-                    data.as_ptr() as *const _,
-                    data.len(),
-                    glib::ffi::GDestroyNotify::None,
-                    0 as *mut _,
-                ))
-            };
+            let data = glib::Bytes::from_owned(data.to_owned());
 
             let texture = gdk::MemoryTexture::new(
                 width,
@@ -216,3 +209,6 @@ impl LottieAnimation {
         Self::from_file(file)
     }
 }
+
+unsafe impl Sync for LottieAnimation {}
+unsafe impl Send for LottieAnimation {}
