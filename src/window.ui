@@ -8,7 +8,7 @@
       <object class="GtkHeaderBar" id="header_bar"/>
     </child>
     <child>
-      <object class="GtkPicture" id="picture"/>
+      <object class="GtkImage" id="image"/>
     </child>
   </template>
 </interface>

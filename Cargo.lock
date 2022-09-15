@@ -432,6 +432,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "gtk-rlottie"
+version = "0.1.0"
+source = "git+https://github.com/YuraIz/gtk-rlottie-rs#ea48e0c8f4ad7a51b2cebf94d413a6e84e4ea134"
+dependencies = [
+ "flate2",
+ "gtk4",
+ "rlottie",
+]
+
+[[package]]
 name = "gtk4"
 version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -798,8 +808,7 @@ checksum = "c3b221de559e4a29df3b957eec92bc0de6bc8eaf6ca9cfed43e5e1d67ff65a34"
 [[package]]
 name = "rlottie"
 version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8bd8750273f641daf97471c5df411d0d2676db90c222254cf65d59190f44f790"
+source = "git+https://github.com/melix99/telegram-rlottie-rs#fb02b0f677ed37046e8fc07ce892589bfa9b9a5f"
 dependencies = [
  "rgb",
  "rlottie-sys",
@@ -808,8 +817,7 @@ dependencies = [
 [[package]]
 name = "rlottie-sys"
 version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e241c512c621ed43c69e7ef6e754270f15bf0c5ada6cc9e5b3e8895170728d4"
+source = "git+https://github.com/melix99/telegram-rlottie-rs#fb02b0f677ed37046e8fc07ce892589bfa9b9a5f"
 dependencies = [
  "bindgen",
  "pkg-config",
@@ -819,11 +827,10 @@ dependencies = [
 name = "rlottietest"
 version = "0.1.0"
 dependencies = [
- "flate2",
  "gettext-rs",
+ "gtk-rlottie",
  "gtk4",
  "libadwaita",
- "rlottie",
 ]
 
 [[package]]

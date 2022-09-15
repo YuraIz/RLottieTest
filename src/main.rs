@@ -1,6 +1,5 @@
 mod application;
 mod config;
-mod lottie_animation;
 mod window;
 
 use self::application::RlottietestApplication;

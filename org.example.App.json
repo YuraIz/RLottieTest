@@ -33,11 +33,12 @@
         {
             "name": "rlottie",
             "buildsystem": "meson",
+            "config-opts": ["-Dwerror=false"],
             "sources": [
                 {
                     "type": "git",
-                    "url": "https://github.com/Samsung/rlottie.git",
-                    "branch": "master"
+                    "url": "https://github.com/melix99/rlottie",
+                    "branch": "fix-build"
                 }
             ]
         },

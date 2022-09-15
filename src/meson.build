@@ -29,7 +29,6 @@ run_command(
 )
 
 rust_sources = files(
-  'lottie_animation.rs',
   'application.rs',
   'config.rs',
   'main.rs',

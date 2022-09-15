@@ -1,22 +1,10 @@
 # RLottieTest
 
-I made gtk::MediaFile that displays lottie animations using rlottie
-but I need help with optimizations, because it uses about 8% of my cpu
+Simple example for my [gtk-rlottie-rs](https://github.com/YuraIz/gtk-rlottie-rs) crate
 
-[animations.webm](https://user-images.githubusercontent.com/63008755/189936438-2c8e298c-5b4a-4667-b29c-b85e789a21b0.webm)
-
-[path to LottieAnimation](https://github.com/YuraIz/RLottieTest/blob/main/src/lottie_animation.rs)
+[animations.webm](https://user-images.githubusercontent.com/63008755/190463867-c40a0e4b-60d0-4c99-ae7f-7ca3e72594b6.webm)
 
 Example of use
-
-```Rust
-let filename = "your_file.tgs"; // You can use json or tgs (gzipped json) formats
-let lottie_animation = LottieAnimation::from_filename(&filename); 
-
-lottie_animation.play();
-
-obj.imp().picture.set_paintable(Some(&lottie_animation));
-```
 
 you can drag'n drop animations from [data/animations](https://github.com/YuraIz/RLottieTest/tree/main/data/animations) folder
 these animations taken from [unigram](https://github.com/UnigramDev/Unigram/tree/develop/Unigram/Unigram/Assets/Animations) repo
