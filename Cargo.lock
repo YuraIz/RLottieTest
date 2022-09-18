@@ -432,16 +432,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gtk-rlottie"
-version = "0.1.0"
-source = "git+https://github.com/YuraIz/gtk-rlottie-rs#ea48e0c8f4ad7a51b2cebf94d413a6e84e4ea134"
-dependencies = [
- "flate2",
- "gtk4",
- "rlottie",
-]
-
-[[package]]
 name = "gtk4"
 version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -827,10 +817,11 @@ dependencies = [
 name = "rlottietest"
 version = "0.1.0"
 dependencies = [
+ "flate2",
  "gettext-rs",
- "gtk-rlottie",
  "gtk4",
  "libadwaita",
+ "rlottie",
 ]
 
 [[package]]

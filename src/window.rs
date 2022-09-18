@@ -1,11 +1,13 @@
+use adw::prelude::*;
 use glib::clone;
-use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gdk, gio, glib, CompositeTemplate};
 
-use gtk_rlottie::LottieAnimation;
+use super::rlt;
 
 mod imp {
+
+    use adw::subclass::prelude::AdwApplicationWindowImpl;
 
     use super::*;
 
@@ -13,17 +15,17 @@ mod imp {
     #[template(resource = "/org/example/App/window.ui")]
     pub struct RlottietestWindow {
         // Template widgets
+        // #[template_child]
+        // pub header_bar: TemplateChild<gtk::HeaderBar>,
         #[template_child]
-        pub header_bar: TemplateChild<gtk::HeaderBar>,
-        #[template_child]
-        pub image: TemplateChild<gtk::Image>,
+        pub bin: TemplateChild<adw::Bin>,
     }
 
     #[glib::object_subclass]
     impl ObjectSubclass for RlottietestWindow {
         const NAME: &'static str = "RlottietestWindow";
         type Type = super::RlottietestWindow;
-        type ParentType = gtk::ApplicationWindow;
+        type ParentType = adw::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
@@ -45,12 +47,14 @@ mod imp {
                     if let Ok(file_list) = value.get::<gdk::FileList>() {
                         let file = file_list.files()[0].to_owned();
 
-                        let lottie_animation = LottieAnimation::from_file(file);
+                        let animation = rlt::Animation::from_file(file);
 
-                        lottie_animation.play();
-                        lottie_animation.set_loop(true);
+                        animation.play();
+                        animation.set_loop(true);
+                        animation.set_halign(gtk::Align::Center);
+                        animation.set_use_cache(true);
 
-                        obj.imp().image.set_paintable(Some(&lottie_animation));
+                        obj.imp().bin.set_child(Some(&animation));
                         true
                     } else {
                         false
@@ -58,26 +62,28 @@ mod imp {
                 }
             ));
 
-            let lottie_animation =
-                LottieAnimation::from_filename("./data/animations/AuthorizationStateWaitCode.tgs");
+            let animation =
+                rlt::Animation::from_filename("./data/animations/AuthorizationStateWaitCode.tgs");
 
             obj.add_controller(&target);
 
-            lottie_animation.play();
+            animation.play();
+            animation.set_loop(true);
+            animation.set_halign(gtk::Align::Center);
+            animation.set_use_cache(true);
 
-            obj.imp().image.set_paintable(Some(&lottie_animation));
-
-            lottie_animation.set_loop(true);
+            self.bin.set_child(Some(&animation));
         }
     }
     impl WidgetImpl for RlottietestWindow {}
     impl WindowImpl for RlottietestWindow {}
     impl ApplicationWindowImpl for RlottietestWindow {}
+    impl AdwApplicationWindowImpl for RlottietestWindow {}
 }
 
 glib::wrapper! {
     pub struct RlottietestWindow(ObjectSubclass<imp::RlottietestWindow>)
-        @extends gtk::Widget, gtk::Window, gtk::ApplicationWindow,
+        @extends gtk::Widget, gtk::Window, gtk::ApplicationWindow, adw::Window,
         @implements gio::ActionGroup, gio::ActionMap;
 }
 

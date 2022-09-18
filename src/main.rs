@@ -1,6 +1,7 @@
 mod application;
 mod config;
 mod window;
+mod rlt;
 
 use self::application::RlottietestApplication;
 use self::window::RlottietestWindow;

@@ -29,10 +29,13 @@ run_command(
 )
 
 rust_sources = files(
+  'rlt.rs',
   'application.rs',
   'config.rs',
   'main.rs',
   'window.rs',
+  'rlt/animation.rs',
+  'rlt/animation_paintable.rs'
 )
 
 sources = [cargo_sources, rust_sources]
